@@ -1,0 +1,17 @@
+# Security (NEVER COMMIT)
+.env
+backend/.env
+backend/venv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/

@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic-settings
+python-multipart
+chromadb
+langchain
+langchain-openai
+httpx
+python-dotenv
+pytest
