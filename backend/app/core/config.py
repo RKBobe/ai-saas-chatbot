@@ -1,5 +1,5 @@
 from typing import List
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AI SaaS Platform"
@@ -16,19 +16,22 @@ class Settings(BaseSettings):
     # --- Database ---
     DATABASE_URL: str
     CHROMA_DB_URL: str
+    CHROMA_HOST: str = "localhost"
+    CHROMA_PORT: int = 8001
     
     # --- Facebook Integration ---
-    FB_APP_ID: str
-    FB_APP_SECRET: str
-    FB_VERIFY_TOKEN: str
-    FB_PAGE_ACCESS_TOKEN: str
+    FB_APP_ID: str = ""
+    FB_APP_SECRET: str = ""
+    FB_VERIFY_TOKEN: str = ""
+    FB_PAGE_ACCESS_TOKEN: str = ""
     
     # --- AI Providers ---
     OPENAI_API_KEY: str = "" 
     GEMINI_API_KEY: str
     
-    class Config:
-        env_file = ".env"
-        extra = "ignore" 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
 settings = Settings()

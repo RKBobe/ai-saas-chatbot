@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chatbot Widget Test Page</title>
+  </head>
+  <body>
+    <h1>Chatbot Widget Test Page</h1>
+    <p>This is a test page for the embeddable chatbot widget.</p>
+    
+    <!-- Widget Container -->
+    <div id="chatbot-container"></div>
+
+    <script type="module">
+      import { initChatbot } from '/src/main.js';
+      // Initialize the widget into our container
+      window.onload = () => {
+        window.initChatbot('chatbot-container');
+      };
+    </script>
+  </body>
+</html>

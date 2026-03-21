@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.v1.endpoints import webhooks
+from app.api.v1.endpoints import webhooks, chat
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -19,11 +19,17 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 # Include the Webhook Router
-# This connects the "webhooks.py" file to the "/api/v1/webhooks" URL
 app.include_router(
     webhooks.router, 
     prefix=f"{settings.API_V1_STR}/webhooks", 
     tags=["webhooks"]
+)
+
+# Include Generic Chat Router
+app.include_router(
+    chat.router, 
+    prefix=f"{settings.API_V1_STR}/chat", 
+    tags=["chat"]
 )
 
 @app.get("/")

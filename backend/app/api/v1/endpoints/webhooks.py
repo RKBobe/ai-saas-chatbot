@@ -1,14 +1,15 @@
 import httpx
+import re
 from fastapi import APIRouter, Request, HTTPException, Query, BackgroundTasks
 from app.core.config import settings
 from app.services.llm.vector_store import VectorStoreService
-from app.services.llm.gemini_service import GeminiService
+from app.services.llm.gemini_service import GeminiService 
 
 router = APIRouter()
 
 # --- Initialize Services ---
-vector_service = VectorStoreService()
-llm_service = GeminiService()  
+# Gemini is global, but VectorStore is per-client
+llm_service = GeminiService()
 
 print("✅ GEMINI BRAIN LOADED")
 
@@ -41,37 +42,37 @@ async def facebook_webhook(request: Request, background_tasks: BackgroundTasks):
         entry = data['entry'][0]
         messaging_events = entry.get('messaging', [])
         
+        # For Facebook integration, we use a fixed client_id "facebook_main"
+        vector_service = VectorStoreService(client_id="facebook_main")
+
         for event in messaging_events:
             if 'message' in event and 'text' in event['message']:
                 sender_id = event['sender']['id']
-                user_text = event['message']['text']
-                print(f"User said: {user_text}")
+                raw_text = event['message']['text']
+                
+                clean_text = raw_text.strip().strip('"').strip("'").strip()
+                print(f"User said (Cleaned): {clean_text}")
 
                 # Mode A: TEACHING
-                if user_text.lower().startswith("learn:"):
-                    new_fact = user_text[6:].strip()
-                    await vector_service.add_memory(new_fact, {"source": "facebook"})
-                    reply_text = "✅ I have filed that information away."
+                if clean_text.lower().startswith("learn:"):
+                    new_fact = clean_text[6:].strip()
+                    await vector_service.add_memory(new_fact, {"source": "facebook", "sender_id": sender_id})
+                    reply_text = f"✅ I have learned: '{new_fact}'"
 
                 # Mode B: THINKING (RAG Pipeline)
                 else:
-                    # 1. Search Memory
-                    results = await vector_service.search(user_text)
+                    results = await vector_service.search(clean_text)
                     documents = results.get('documents', [])
                     
+                    found_memory = ""
                     if documents and documents[0]:
-                        found_memory = documents[0][0] # The raw fact
+                        found_memory = "\n".join(documents[0])
                         
-                        # 2. Ask OpenAI to synthesize the answer
-                        print(f"Found context: {found_memory}")
-                        reply_text = await llm_service.generate_response(user_text, found_memory)
-                    else:
-                        reply_text = "I searched my database, but I don't know the answer to that yet."
+                    reply_text = await llm_service.generate_response(clean_text, found_memory)
                 
-                # Send the final AI answer
                 background_tasks.add_task(send_fb_message, sender_id, reply_text)
 
         return {"status": "ok"}
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error in Facebook Webhook: {e}")
         return {"status": "error"}
