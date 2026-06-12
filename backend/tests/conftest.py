@@ -6,6 +6,10 @@ import os
 # Ensure the app directory is in the path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
+# Override environment variables for isolation during tests
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["GEMINI_API_KEY"] = "mock-key-for-testing"
+
 from app.main import app
 from app.services.llm.gemini_service import GeminiService
 from unittest.mock import AsyncMock

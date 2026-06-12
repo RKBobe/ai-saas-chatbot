@@ -36,8 +36,8 @@ class GeminiService:
         """
         
         try:
-            # Use the latest Gemini 3.1 Pro model
-            model = genai.GenerativeModel('gemini-3.1-pro')
+            # Use the latest Gemini 3.5 Flash model
+            model = genai.GenerativeModel('gemini-3.5-flash')
             
             # Generate response (Async)
             response = await model.generate_content_async(full_prompt)

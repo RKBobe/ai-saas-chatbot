@@ -1,11 +1,9 @@
-from fastapi import APIRouter, HTTPException, Body
-from app.services.llm.vector_store import VectorStoreService
-from app.services.llm.gemini_service import GeminiService
+from fastapi import APIRouter, HTTPException
+from app.services.agent.office_agent import OfficeAgent
 from pydantic import BaseModel
 from typing import Optional
 
 router = APIRouter()
-llm_service = GeminiService()
 
 class ChatRequest(BaseModel):
     message: str
@@ -20,24 +18,19 @@ class ChatResponse(BaseModel):
 @router.post("/", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
-    Generic chat endpoint to interact with client-specific knowledge bases.
+    Unified chat endpoint to interact with the Office Administrator agent.
+    Isolates context dynamically by client_id.
     """
     try:
-        # 1. Initialize Vector Store for this specific client
-        vector_service = VectorStoreService(client_id=request.client_id)
+        # Instantiate the unified agent
+        agent = OfficeAgent(
+            client_id=request.client_id,
+            channel="web",
+            session_id=request.user_id
+        )
         
-        # 2. Search client-specific knowledge base
-        results = await vector_service.search(request.message)
-        documents = results.get('documents', [])
-        
-        context = ""
-        if documents and documents[0]:
-            # Flatten context from multiple results
-            context = "\n".join(documents[0])
-            
-        # 3. Generate response using Gemini
-        # Multi-tenant context is automatically isolated via VectorStoreService
-        reply_text = await llm_service.generate_response(request.message, context)
+        # Execute agent query
+        reply_text = await agent.get_response(request.message)
         
         return {
             "reply": reply_text,
@@ -45,5 +38,5 @@ async def chat(request: ChatRequest):
             "user_id": request.user_id
         }
     except Exception as e:
-        print(f"Chat Error: {e}")
+        print(f"Chat Endpoint Error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")

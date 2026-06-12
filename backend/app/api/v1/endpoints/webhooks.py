@@ -11,7 +11,7 @@ router = APIRouter()
 # Gemini is global, but VectorStore is per-client
 llm_service = GeminiService()
 
-print("✅ GEMINI BRAIN LOADED")
+print("[OK] GEMINI BRAIN LOADED")
 
 # --- 1. THE SPEAKER ---
 async def send_fb_message(recipient_id: str, text: str):

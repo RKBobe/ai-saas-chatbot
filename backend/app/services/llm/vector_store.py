@@ -9,10 +9,18 @@ _chroma_client = None
 def get_chroma_client():
     global _chroma_client
     if _chroma_client is None:
-        _chroma_client = chromadb.HttpClient(
-            host=settings.CHROMA_HOST, 
-            port=settings.CHROMA_PORT
-        )
+        try:
+            # Try HTTP Client first
+            _chroma_client = chromadb.HttpClient(
+                host=settings.CHROMA_HOST, 
+                port=settings.CHROMA_PORT
+            )
+            # Ping to test connection
+            _chroma_client.heartbeat()
+            print("[OK] Connected to ChromaDB Server")
+        except Exception:
+            print("[WARNING] ChromaDB HTTP connection failed. Falling back to local PersistentClient: ./chroma_db")
+            _chroma_client = chromadb.PersistentClient(path="./chroma_db")
     return _chroma_client
 
 class VectorStoreService:

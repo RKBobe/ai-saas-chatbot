@@ -15,3 +15,11 @@ frontend/dist/
 # IDEs
 .vscode/
 .idea/
+
+# Local database and vector store
+backend/saas_db.db
+backend/chroma_db/
+
+# Logs and scratch files
+debug.log
+check_fc.py

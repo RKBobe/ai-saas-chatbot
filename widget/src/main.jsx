@@ -4,7 +4,8 @@ import App from './App';
 import './styles.css';
 
 // This function can be called from any website to embed the widget
-window.initChatbot = (containerId) => {
+export const initChatbot = (containerId) => {
+  window.initChatbot = initChatbot;
   const container = document.getElementById(containerId);
   if (container) {
     const root = ReactDOM.createRoot(container);

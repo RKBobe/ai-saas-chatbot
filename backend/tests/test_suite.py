@@ -39,8 +39,8 @@ def test_root_endpoint(client):
 
 def test_chat_endpoint_structure(client):
     """Test the POST /chat endpoint responds with the correct JSON structure."""
-    with patch("app.api.v1.endpoints.chat.llm_service.generate_response", new_callable=AsyncMock) as mock_llm:
-        mock_llm.return_value = "Mocked AI Response"
+    with patch("app.api.v1.endpoints.chat.OfficeAgent.get_response", new_callable=AsyncMock) as mock_agent:
+        mock_agent.return_value = "Mocked AI Response"
         
         test_payload = {
             "message": "Hello world",

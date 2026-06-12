@@ -112,3 +112,5 @@ zipp
 zstandard
 
 google-generativeai
+pypdf
+twilio
