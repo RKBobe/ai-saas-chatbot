@@ -18,8 +18,13 @@ frontend/dist/
 
 # Local database and vector store
 backend/saas_db.db
+backend/test_saas_db.db
 backend/chroma_db/
 
 # Logs and scratch files
 debug.log
-check_fc.py
+check_fc.py
+
+# Build outputs
+widget/dist/
+frontend/dist/
